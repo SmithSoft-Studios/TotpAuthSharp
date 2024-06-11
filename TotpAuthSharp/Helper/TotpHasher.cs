@@ -9,7 +9,6 @@ internal static class TotpHasher
     internal static int Hash(string secret, long iterationNumber, int digits = 6)
     {
         var key = Encoding.UTF8.GetBytes(secret);
-        //var key = Base32Encoder.Encode(secret);
         return _hash(key, iterationNumber, digits);
     }
 
