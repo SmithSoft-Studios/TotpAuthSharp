@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Version>1.0.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Daniël Smith</Authors>
+    <Authors>SmithSoftStudios</Authors>
     <Company>SmithSoftStudios</Company>
     <Description>.net8.0 library for generating and validating timed based one time password authentication.</Description>
     <Copyright></Copyright>
