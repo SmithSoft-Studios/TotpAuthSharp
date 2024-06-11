@@ -1,5 +1,4 @@
 ﻿using TotpAuthSharp.Interface;
-using TotpAuthSharp.QrCodeGenerator.Models;
 
 namespace TotpAuthSharp.Models;
 

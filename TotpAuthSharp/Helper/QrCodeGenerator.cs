@@ -1,7 +1,8 @@
-﻿using SkiaSharp;
+﻿using System.IO;
+using SkiaSharp;
 using SkiaSharp.QrCode.Image;
 
-namespace TotpAuthSharp.QrCodeGenerator;
+namespace TotpAuthSharp.Helper;
 
 public static class QrCodeGenerator
 {

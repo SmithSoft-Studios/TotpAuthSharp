@@ -3,7 +3,6 @@ using System.Net.Http;
 using TotpAuthSharp.Helper;
 using TotpAuthSharp.Interface;
 using TotpAuthSharp.Models;
-using TotpAuthSharp.QrCodeGenerator;
 
 namespace TotpAuthSharp;
 
