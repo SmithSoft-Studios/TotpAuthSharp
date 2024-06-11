@@ -37,13 +37,18 @@ TotpAuthSharp
 - `CLASS` TotpValidator
 - `CLASS` TotpSetupGenerator
 
+- TotpAuthSharp.Helper
+- `CLASS` Base32
+- `CLASS` Guard
+- `CLASS` QrCodeGenerator
+- `CLASS` TotpHasher
+- `CLASS` UrlEncoder
+
 TotpAuthSharp.Models
 - `CLASS` TotpSetup
-
-- TotpAuthSharp.QrCodeGenerator
 - `CLASS` QrCodeImage
 
-AspNetCore.Totp.Interface
+TotpAuthSharp.Interface
 - `INTERFACE` IQrCodeImage
 - `INTERFACE` ITotpGenerator
 - `INTERFACE` ITotpSetup

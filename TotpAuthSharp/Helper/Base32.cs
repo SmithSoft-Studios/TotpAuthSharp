@@ -41,9 +41,9 @@ internal static class Base32
         }
 
         var key = Encoding.UTF8.GetString(output.ToArray());
-        if (key.EndsWith("\0"))
+        if (key.EndsWith('\0'))
         {
-            var index = key.IndexOf("\0", StringComparison.Ordinal);
+            var index = key.IndexOf('\0', StringComparison.Ordinal);
             if (index != -1)
             {
                 key = key.Remove(index, 1);
