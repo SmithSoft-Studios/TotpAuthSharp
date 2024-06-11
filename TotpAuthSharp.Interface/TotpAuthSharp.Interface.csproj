@@ -8,10 +8,10 @@
     <Company>SmithSoftStudios</Company>
     <Description>.net8.0 library for generating and validating timed based one time password authentication.</Description>
     <Copyright></Copyright>
-    <PackageLicenseUrl>https://github.com/damirkusar/AspNetCore.Totp/blob/master/License.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp/blob/main/License.md</PackageLicenseUrl>
     <PackageTags>.net8.0;one time password;totp;google authenticator;authenticator;asp.net core;totp;otp;multi-factor;two-factor;2fa;2factor;mfa;security;oath;protection;authentication</PackageTags>
-    <PackageProjectUrl>https://github.com/damirkusar/AspNetCore.Totp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/damirkusar/AspNetCore.Totp</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
