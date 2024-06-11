@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+	<metadata>
+		<id>TotpAuthSharp</id>
+		<version>1.0.0</version>
+		<authors>Daniël Smith</authors>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<licenseUrl>https://github.com/damirkusar/AspNetCore.Totp/blob/master/License.md</licenseUrl>
+		<projectUrl>https://github.com/damirkusar/AspNetCore.Totp</projectUrl>
+		<description>.net8.0 library for generating and validating timed based one time password authentication.</description>
+		<tags>.net8.0;one time password;totp;google authenticator;authenticator;asp.net core;totp;otp;multi-factor;two-factor;2fa;2factor;mfa;security;oath;protection;authentication</tags>
+		<dependencies>
+			<group>
+				<dependency id="SkiaSharp.QrCode" Version="0.7.0"/>
+			</group>
+			<group targetFramework=".net8.0">
+				<dependency id="AspNetCore.Totp.Interface" version="2.3.1" exclude="Build,Analyzers" />
+				<dependency id="AspNetCore.Totp.QrCodeGenerator" version="2.3.1" exclude="Build,Analyzers" />
+			</group>
+		</dependencies>
+	</metadata>
+</package>
