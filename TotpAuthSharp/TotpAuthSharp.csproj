@@ -10,7 +10,7 @@
 		<PackageId>TotpAuthSharp</PackageId>
 		<PackageTags>.net8.0;one time password;totp;google authenticator;authenticator;asp.net core;totp;otp;multi-factor;two-factor;2fa;2factor;mfa;security;oath;protection;authentication</PackageTags>
 		<PackageProjectUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp/License.md</PackageLicenseUrl>
+		<PackageLicenseUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp/blob/main/License.md</PackageLicenseUrl>
 		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
 		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
