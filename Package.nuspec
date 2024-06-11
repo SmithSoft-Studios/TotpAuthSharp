@@ -2,7 +2,6 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
 	<metadata>
 		<id>TotpAuthSharp</id>
-		<version>1.0.1</version>
 		<authors>SmithSoftStudios</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<licenseUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp/blob/master/License.md</licenseUrl>

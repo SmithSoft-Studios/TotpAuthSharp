@@ -5,7 +5,6 @@ using TotpAuthSharp.Interface;
 using TotpAuthSharp.Models;
 
 namespace TotpAuthSharp;
-
 public class TotpSetupGenerator : ITotpSetupGenerator
 {
     /// <summary>
@@ -25,7 +24,7 @@ public class TotpSetupGenerator : ITotpSetupGenerator
 
         accountIdentity = accountIdentity.Replace(" ", "");
         var encodedSecretKey = Base32.Encode(accountSecretKey);
-        var provisionUrl = UrlEncoder.Encode($"otpauth://totp/{accountIdentity}?secret={encodedSecretKey}&issuer={UrlEncoder.Encode(issuer)}");
+        var provisionUrl = $"otpauth://totp/{accountIdentity}?secret={encodedSecretKey}&issuer={UrlEncoder.Encode(issuer)}";
 
         return new TotpSetup(encodedSecretKey, _getQrImage(provisionUrl, qrCodeWidth, qrCodeHeight));
     }
