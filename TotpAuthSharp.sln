@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{288936D4-8861-4D6A-9C98-9C8BA0647271}"
+	ProjectSection(SolutionItems) = preProject
+		License.md = License.md
+		Package.nuspec = Package.nuspec
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TotpAuthSharp", "TotpAuthSharp\TotpAuthSharp.csproj", "{A3EFBC99-B91B-4E09-9573-732079E328EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TotpAuthSharp.Tests", "TotpAuthSharp.Tests\TotpAuthSharp.Tests.csproj", "{630CCA83-8415-4BFF-BB3D-A5D486852B7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TotpAuthSharp.Interface", "TotpAuthSharp.Interface\TotpAuthSharp.Interface.csproj", "{DC1695BE-DE52-4E66-8089-2A98C23EED89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TotpAuthSharp.QrCodeGenerator", "TotpAuthSharp.QrCodeGenerator\TotpAuthSharp.QrCodeGenerator.csproj", "{B48C88AF-D94B-41D6-B5EA-374BACEF1B8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3EFBC99-B91B-4E09-9573-732079E328EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3EFBC99-B91B-4E09-9573-732079E328EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3EFBC99-B91B-4E09-9573-732079E328EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3EFBC99-B91B-4E09-9573-732079E328EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{630CCA83-8415-4BFF-BB3D-A5D486852B7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{630CCA83-8415-4BFF-BB3D-A5D486852B7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{630CCA83-8415-4BFF-BB3D-A5D486852B7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{630CCA83-8415-4BFF-BB3D-A5D486852B7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC1695BE-DE52-4E66-8089-2A98C23EED89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC1695BE-DE52-4E66-8089-2A98C23EED89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC1695BE-DE52-4E66-8089-2A98C23EED89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC1695BE-DE52-4E66-8089-2A98C23EED89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B48C88AF-D94B-41D6-B5EA-374BACEF1B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B48C88AF-D94B-41D6-B5EA-374BACEF1B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B48C88AF-D94B-41D6-B5EA-374BACEF1B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B48C88AF-D94B-41D6-B5EA-374BACEF1B8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BCD3571F-7CDB-499B-9FC4-9D6435350305}
+	EndGlobalSection
+EndGlobal
