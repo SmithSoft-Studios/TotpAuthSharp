@@ -18,6 +18,7 @@
 		<RepositoryUrl>https://github.com/SmithSoft-Studios/TotpAuthSharp</RepositoryUrl>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 		<RepositoryType>Git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>TotpAuthSharp.png</PackageIcon>
 	</PropertyGroup>
 	
