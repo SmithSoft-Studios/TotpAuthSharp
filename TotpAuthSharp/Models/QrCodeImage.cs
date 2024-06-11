@@ -1,6 +1,7 @@
+using System;
 using TotpAuthSharp.Interface;
 
-namespace TotpAuthSharp.QrCodeGenerator.Models;
+namespace TotpAuthSharp.Models;
 
 public class QrCodeImage(byte[] bytes) : IQrCodeImage
 {
