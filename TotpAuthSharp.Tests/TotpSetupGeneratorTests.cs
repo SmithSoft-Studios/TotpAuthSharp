@@ -16,4 +16,14 @@ public class TotpSetupGeneratorTests
         Assert.Equal(TotpAuthTests.AccountSecretKeyEncoded, totpSetup.ManualSetupKey);
         Assert.Equal(TotpAuthTests.QrImage, totpSetup.QrCodeImage);
     }
+
+    [Fact]
+    public void GenerateSetupCodeFromWeb_shouldNotBeNull_manuelTest_workWithGoogleAuthenticator()
+    {
+        var totpSetup =
+            _totpSetupGenerator.GenerateFromWeb("Totp Auth Tester", "Daniel Smith", TotpAuthTests.AccountSecretKey);
+        Assert.NotNull(totpSetup);
+        Assert.Equal(TotpAuthTests.AccountSecretKeyEncoded, totpSetup.ManualSetupKey);
+        Assert.Equal(TotpAuthTests.QrImageFromWeb, totpSetup.QrCodeImage);
+    }
 }
