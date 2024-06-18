@@ -98,12 +98,23 @@ var qrCode = qrGenerator.Generate(
 );
 ```
 
+Description: Used to fetch a QR code image with quickchart.io and return it as a TotpSetup class containing the image. 
+
+Example
+```C#
+var qrGenerator = new TotpSetupGenerator();
+var qrCode = qrGenerator.GenerateFromWeb(
+	issuer: "TestCo",
+	accountIdentity: _userIdentity.Id.ToString(),
+	accountSecretKey: _userIdentity.AccountSecretKey
+);
+```
+
 ### Example Implementation
 
 ```C#
 using System;
 using TotpAuthSharp;
-using TotpAuthSharp.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthApi.Controllers
@@ -149,10 +160,27 @@ namespace AuthApi.Controllers
             return _totpGenerator.Generate(_userIdentity.AccountSecretKey);
         }
 
+        [HttpGet("code-fromweb")]
+        public int GetCodeFromWeb()
+        {
+            return _totpGenerator.GenerateFromWeb(_userIdentity.AccountSecretKey);
+        }
+
         [HttpGet("qr-code")]
         public IActionResult GetQr()
         {
             var qrCode = _totpQrGenerator.Generate(
+                "TestCo",
+                _userIdentity.Id.ToString(),
+                _userIdentity.AccountSecretKey
+            );
+            return File(qrCode.QrCodeImageBytes, "image/png");
+        }
+
+        [HttpGet("qr-code-fromweb")]
+        public IActionResult GetQr()
+        {
+            var qrCode = _totpQrGenerator.GenerateFromWeb(
                 "TestCo",
                 _userIdentity.Id.ToString(),
                 _userIdentity.AccountSecretKey
