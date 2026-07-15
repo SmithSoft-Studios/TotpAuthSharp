@@ -40,7 +40,8 @@ TotpAuthSharp
 - TotpAuthSharp.Helper
 - `CLASS` Base32
 - `CLASS` Guard
-- `CLASS` QrCodeGenerator
+- `CLASS` SkiaQrCodeGenerator (implements `IQrCodeGenerator`)
+- `CLASS` HttpQrCodeDownloader (implements `IQrCodeDownloader`)
 - `CLASS` TotpHasher
 - `CLASS` UrlEncoder
 
@@ -50,6 +51,8 @@ TotpAuthSharp.Models
 
 TotpAuthSharp.Interface
 - `INTERFACE` IQrCodeImage
+- `INTERFACE` IQrCodeGenerator
+- `INTERFACE` IQrCodeDownloader
 - `INTERFACE` ITotpGenerator
 - `INTERFACE` ITotpSetup
 - `INTERFACE` ITotpSetupGenerator
@@ -84,9 +87,19 @@ var code = validator.Validate(_userIdentity.AccountSecretKey, code);
 
 __TotpSetupGenerator__
 
-Constructor Parameters: `None`
+Constructor Parameters: `None` (default), or `IQrCodeGenerator, IQrCodeDownloader` for custom composition / testing
 
 Description: Used to fetch a QR code image with SkiaSharp and return it as a TotpSetup class containing the image. 
+
+The parameterless constructor wires the default `SkiaQrCodeGenerator` (local QR generation via SkiaSharp.QrCode) and `HttpQrCodeDownloader` (quickchart.io fetch). A second constructor accepts these dependencies so you can inject your own implementations or mocks:
+
+```C#
+// Default
+var qrGenerator = new TotpSetupGenerator();
+
+// Injected (IoC / testing)
+var qrGenerator = new TotpSetupGenerator(myQrCodeGenerator, myQrCodeDownloader);
+```
 
 Example
 ```C#
@@ -160,12 +173,6 @@ namespace AuthApi.Controllers
             return _totpGenerator.Generate(_userIdentity.AccountSecretKey);
         }
 
-        [HttpGet("code-fromweb")]
-        public int GetCodeFromWeb()
-        {
-            return _totpGenerator.GenerateFromWeb(_userIdentity.AccountSecretKey);
-        }
-
         [HttpGet("qr-code")]
         public IActionResult GetQr()
         {
@@ -178,7 +185,7 @@ namespace AuthApi.Controllers
         }
 
         [HttpGet("qr-code-fromweb")]
-        public IActionResult GetQr()
+        public IActionResult GetQrFromWeb()
         {
             var qrCode = _totpQrGenerator.GenerateFromWeb(
                 "TestCo",
