@@ -1,0 +1,23 @@
+# Normalize line endings automatically for text files
+* text=auto
+
+# Explicit handling for common source/text types
+*.cs      text
+*.csproj  text
+*.sln     text
+*.nuspec  text
+*.config  text
+*.json    text
+*.xml     text
+*.md      text
+*.txt     text
+
+# Binary files — never normalize
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.snk     binary
+*.dll     binary
+*.exe     binary
