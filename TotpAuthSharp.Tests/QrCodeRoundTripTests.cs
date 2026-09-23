@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
-using Moq;
 using SkiaSharp;
 using SkiaSharp.QrCode;
 using TotpAuthSharp.Helper;
@@ -11,9 +10,6 @@ using TotpAuthSharp.Interface;
 using Xunit;
 using ZXing;
 using ZXing.SkiaSharp;
-
-// GenerateFromWeb is obsolete but still supported, so its behaviour stays under test.
-#pragma warning disable CS0618
 
 namespace TotpAuthSharp.Tests;
 
@@ -33,9 +29,6 @@ public class QrCodeRoundTripTests
         "otpauth://totp/JaneDoe?secret=HBCTOQSDII4DOLKBIQYTALJUGI2TCLKBGVBDALJTII3TIQJSIM3TGMJWGI&issuer=TACS%20UAT";
 
     private static readonly string[] Producers = [Skia, ZXing];
-
-    // Strict mock: any call to the downloader throws, so these tests fail if the local path ever goes to the web.
-    private readonly Mock<IQrCodeDownloader> _offlineDownloader = new(MockBehavior.Strict);
 
     public static IEnumerable<object[]> AllProducers() => Producers.Select(p => new object[] { p });
 
@@ -173,35 +166,6 @@ public class QrCodeRoundTripTests
         Assert.True(validator.Validate(accountSecretKey, code));
     }
 
-    [Theory]
-    [MemberData(nameof(AllProducers))]
-    public void Generate_NeverContactsTheWeb(string producer)
-    {
-        LocalSetupGenerator(producer).Generate(TacsIssuer, "Jane Doe", "secret");
-
-        _offlineDownloader.VerifyNoOtherCalls();
-    }
-
-    [Theory]
-    [MemberData(nameof(AllProducers))]
-    public void Generate_EncodesSamePayloadAsGenerateFromWeb(string producer)
-    {
-        string requestedUrl = null;
-        var capturingDownloader = new Mock<IQrCodeDownloader>();
-        capturingDownloader
-            .Setup(x => x.Download(It.IsAny<string>(), It.IsAny<int>()))
-            .Callback<string, int>((url, _) => requestedUrl = url)
-            .Returns([]);
-        var generator = new TotpSetupGenerator(GeneratorFor(producer), capturingDownloader.Object);
-
-        var local = generator.Generate(TacsIssuer, "Jane Doe", "secret");
-        generator.GenerateFromWeb(TacsIssuer, "Jane Doe", "secret");
-
-        // quickchart.io URL-decodes chl once before encoding it, so decode once here to get what it would render.
-        var chl = requestedUrl[(requestedUrl.IndexOf("&chl=", StringComparison.Ordinal) + "&chl=".Length)..];
-        Assert.Equal(Uri.UnescapeDataString(chl), DecodeWithOtherLibrary(producer, local.QrCodeImageBytes));
-    }
-
     private static IQrCodeGenerator GeneratorFor(string producer) => producer switch
     {
         Skia => new SkiaQrCodeGenerator(),
@@ -209,7 +173,7 @@ public class QrCodeRoundTripTests
         _ => throw new ArgumentOutOfRangeException(nameof(producer), producer, null)
     };
 
-    private TotpSetupGenerator LocalSetupGenerator(string producer) => new(GeneratorFor(producer), _offlineDownloader.Object);
+    private static TotpSetupGenerator LocalSetupGenerator(string producer) => new(GeneratorFor(producer));
 
     private static string DecodeWithOtherLibrary(string producer, byte[] png) => producer switch
     {

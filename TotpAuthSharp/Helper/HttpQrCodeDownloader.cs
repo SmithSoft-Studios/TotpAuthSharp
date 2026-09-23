@@ -4,11 +4,15 @@ using System.Net.Http;
 using System.Threading;
 using TotpAuthSharp.Interface;
 
+// Implements the obsolete IQrCodeDownloader, which it is itself replacing in lockstep.
+#pragma warning disable CS0618
+
 namespace TotpAuthSharp.Helper;
 
 /// <summary>
 ///     <see cref="IQrCodeDownloader" /> backed by <see cref="HttpClient" />.
 /// </summary>
+[Obsolete("No longer used by TotpAuthSharp: GenerateFromWeb was removed in 3.0. This type will be removed in 4.0.")]
 public class HttpQrCodeDownloader : IQrCodeDownloader
 {
     private readonly HttpClient _httpClient;
@@ -17,11 +21,12 @@ public class HttpQrCodeDownloader : IQrCodeDownloader
     ///     Creates a downloader. Pass an <see cref="HttpClient" /> to reuse a shared/injected instance;
     ///     when omitted a new client is created.
     /// </summary>
-    public HttpQrCodeDownloader(HttpClient httpClient = null)
+    public HttpQrCodeDownloader(HttpClient? httpClient = null)
     {
         _httpClient = httpClient ?? new HttpClient();
     }
 
+    /// <inheritdoc />
     public byte[] Download(string url, int timeoutInSeconds = 30)
     {
         try

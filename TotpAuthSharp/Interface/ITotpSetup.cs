@@ -1,5 +1,8 @@
 ﻿namespace TotpAuthSharp.Interface;
 
+/// <summary>
+///     What a user needs to add your app to an authenticator app.
+/// </summary>
 public interface ITotpSetup
 {
     /// <summary>

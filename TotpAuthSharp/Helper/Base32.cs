@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace TotpAuthSharp.Helper;
@@ -9,8 +10,12 @@ internal static class Base32
 
     internal static string Encode(string accountSecretKey)
     {
-        var data = Encoding.UTF8.GetBytes(accountSecretKey);
-        var output = new StringBuilder();
+        return Encode(Encoding.UTF8.GetBytes(accountSecretKey));
+    }
+
+    internal static string Encode(ReadOnlySpan<byte> data)
+    {
+        var output = new StringBuilder((data.Length * 8 + 4) / 5);
 
         for (var bitIndex = 0; bitIndex < data.Length * 8; bitIndex += 5)
         {

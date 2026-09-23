@@ -13,6 +13,7 @@ namespace TotpAuthSharp.Helper;
 /// </summary>
 public class ZXingQrCodeGenerator : IQrCodeGenerator
 {
+    /// <inheritdoc />
     public byte[] Generate(string content, int width = 300, int height = 300)
     {
         var writer = new BarcodeWriter

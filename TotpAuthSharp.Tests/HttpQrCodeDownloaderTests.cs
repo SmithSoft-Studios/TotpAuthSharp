@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using TotpAuthSharp.Helper;
 using Xunit;
 
+// HttpQrCodeDownloader is obsolete but still shipped in 3.x, so its behaviour stays under test.
+#pragma warning disable CS0618
+
 namespace TotpAuthSharp.Tests;
 
 public class HttpQrCodeDownloaderTests
