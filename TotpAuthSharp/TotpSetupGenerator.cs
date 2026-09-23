@@ -45,7 +45,7 @@ public class TotpSetupGenerator : ITotpSetupGenerator
 
         accountIdentity = accountIdentity.Replace(" ", "");
         var encodedSecretKey = Base32.Encode(accountSecretKey);
-        var provisionUrl = $"otpauth://totp/{accountIdentity}?secret={encodedSecretKey}&issuer={UrlEncoder.Encode(issuer)}";
+        var provisionUrl = $"otpauth://totp/{UrlEncoder.Encode(accountIdentity)}?secret={encodedSecretKey}&issuer={UrlEncoder.Encode(issuer)}";
 
         return new TotpSetup(encodedSecretKey, _getQrImage(provisionUrl, qrCodeWidth, qrCodeHeight));
     }
@@ -72,6 +72,7 @@ public class TotpSetupGenerator : ITotpSetupGenerator
     /// <param name="qrCodeHeight">Width of the QR code. Default is 300px.</param>
     /// <param name="useHttps">Use Https on quickchart.io api or not.</param>
     /// <returns>TotpSetup with ManualSetupKey and QrCode.</returns>
+    [Obsolete("Sends the shared secret to quickchart.io. Use Generate, which renders the QR code locally. This method will be removed in 3.0.")]
     public ITotpSetup GenerateFromWeb(string issuer, string accountIdentity, string accountSecretKey, int qrCodeWidth = 300, int qrCodeHeight = 300, bool useHttps = true)
     {
         Guard.NotNull(issuer);
@@ -80,7 +81,7 @@ public class TotpSetupGenerator : ITotpSetupGenerator
 
         accountIdentity = accountIdentity.Replace(" ", "");
         var encodedSecretKey = Base32.Encode(accountSecretKey);
-        var provisionUrl = UrlEncoder.Encode($"otpauth://totp/{accountIdentity}?secret={encodedSecretKey}&issuer={UrlEncoder.Encode(issuer)}");
+        var provisionUrl = UrlEncoder.Encode($"otpauth://totp/{UrlEncoder.Encode(accountIdentity)}?secret={encodedSecretKey}&issuer={UrlEncoder.Encode(issuer)}");
         var protocol = useHttps ? "https" : "http";
         var url = $"{protocol}://quickchart.io/chart?cht=qr&chs={qrCodeWidth}x{qrCodeHeight}&chl={provisionUrl}";
 

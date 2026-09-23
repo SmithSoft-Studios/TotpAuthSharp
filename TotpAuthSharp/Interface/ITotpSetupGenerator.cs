@@ -1,4 +1,6 @@
-﻿namespace TotpAuthSharp.Interface;
+﻿using System;
+
+namespace TotpAuthSharp.Interface;
 
 public interface ITotpSetupGenerator
 {
@@ -23,5 +25,6 @@ public interface ITotpSetupGenerator
     /// <param name="qrCodeHeight">Width of the QR code. Default is 300px.</param>
     /// <param name="useHttps">Use Https on google api or not.</param>
     /// <returns>TotpSetup with ManualSetupKey and QrCode.</returns>
+    [Obsolete("Sends the shared secret to quickchart.io. Use Generate, which renders the QR code locally. This method will be removed in 3.0.")]
     ITotpSetup GenerateFromWeb(string issuer, string accountIdentity, string accountSecretKey, int qrCodeWidth = 300, int qrCodeHeight = 300, bool useHttps = true);
 }

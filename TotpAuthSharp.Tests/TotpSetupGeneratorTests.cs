@@ -4,6 +4,9 @@ using TotpAuthSharp.Interface;
 using TotpAuthSharp.Tests.Helper;
 using Xunit;
 
+// GenerateFromWeb is obsolete but still supported, so its behaviour stays under test.
+#pragma warning disable CS0618
+
 namespace TotpAuthSharp.Tests;
 
 public class TotpSetupGeneratorTests

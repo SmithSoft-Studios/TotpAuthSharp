@@ -1,20 +1,13 @@
-﻿using System.Text;
+﻿using System;
 
 namespace TotpAuthSharp.Helper;
 
 internal static class UrlEncoder
 {
+    // RFC 3986 percent-encoding over UTF-8: everything except A-Z a-z 0-9 - _ . ~ is escaped, so non-ASCII text
+    // (for example "Café") becomes valid UTF-8 escapes that authenticator apps decode correctly.
     internal static string Encode(string value)
     {
-        var result = new StringBuilder();
-        var validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
-
-        foreach (var symbol in value)
-            if (validChars.IndexOf(symbol) != -1)
-                result.Append(symbol);
-            else
-                result.Append('%' + string.Format("{0:X2}", (int)symbol));
-
-        return result.ToString().Replace(" ", "%20");
+        return Uri.EscapeDataString(value);
     }
 }
