@@ -11,7 +11,10 @@ namespace TotpAuthSharp.Tests
 
         public TotpValidatorTests()
         {
-            this._totpGenerator = new TotpGenerator();
+            // A pinned clock keeps these tests deterministic: with the real clock, a 30-second window could roll
+            // over between generating and validating (zero tolerance), or the fixed code below could happen to be
+            // valid at the moment the test runs.
+            this._totpGenerator = new TotpGenerator(FixedTimeProvider.AtUnixSeconds(1234567890));
             this._totpValidator = new TotpValidator(this._totpGenerator);
         }
 
