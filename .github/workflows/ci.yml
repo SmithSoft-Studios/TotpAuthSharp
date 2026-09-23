@@ -1,0 +1,36 @@
+# Builds and tests every pull request and every push to main or a release branch.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'release/**']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Build and test
+        run: dotnet test -c Release
+
+  alpine:
+    # Most consumers deploy on Alpine; run the suite in the official .NET SDK Alpine image (musl, no fontconfig).
+    # Docker is used directly because JavaScript actions such as checkout cannot run inside Alpine containers.
+    name: Test (Alpine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build and test in mcr.microsoft.com/dotnet/sdk:10.0-alpine
+        run: docker run --rm -v "$PWD:/src" -w /src mcr.microsoft.com/dotnet/sdk:10.0-alpine dotnet test -c Release
