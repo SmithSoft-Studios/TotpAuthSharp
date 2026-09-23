@@ -23,7 +23,7 @@ public interface ITotpGenerator
     /// <param name="accountSecretKey">User's secret key. Same as used to create the setup.</param>
     /// <param name="timeTolerance">How far either side of now to accept codes. Every 30-second window that falls
     /// (even partly) within the tolerance is included, so 1 to 30 seconds accepts one window either side and the
-    /// default 60 seconds accepts two.</param>
+    /// default 60 seconds accepts two. Zero or a negative value accepts only the current window.</param>
     /// <returns>The valid TOTPs, oldest window first.</returns>
     IEnumerable<int> GetValidTotps(string accountSecretKey, TimeSpan timeTolerance);
 

@@ -94,11 +94,12 @@ public class TotpGenerator : ITotpGenerator
 
     /// <summary>
     ///     The number of 30-second windows either side of now that fall, at least partly, within the tolerance.
+    ///     A negative tolerance is treated as zero, as in 2.x.
     /// </summary>
     internal static int GetWindowCount(TimeSpan timeTolerance)
     {
-        if (timeTolerance < TimeSpan.Zero)
-            throw new ArgumentOutOfRangeException(nameof(timeTolerance), timeTolerance, "The time tolerance cannot be negative.");
+        if (timeTolerance <= TimeSpan.Zero)
+            return 0;
 
         return (int)Math.Ceiling(timeTolerance.TotalSeconds / TimeStepSeconds);
     }

@@ -85,10 +85,11 @@ public class TotpGeneratorTests
     }
 
     [Fact]
-    public void GetValidTotps_WithNegativeTolerance_Throws()
+    public void GetValidTotps_WithNegativeTolerance_OnlyAcceptsTheCurrentWindow_AsIn2x()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new TotpGenerator().GetValidTotps(RfcSecret, TimeSpan.FromSeconds(-1)));
+        var generator = new TotpGenerator(FixedTimeProvider.AtUnixSeconds(1234567890));
+
+        Assert.Equal([5924], generator.GetValidTotps(RfcSecret, TimeSpan.FromSeconds(-30)));
     }
 
     [Fact]
