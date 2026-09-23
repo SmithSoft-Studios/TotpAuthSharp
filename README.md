@@ -1,26 +1,47 @@
-﻿# TotpAuthSharp
-.net8.0 library for generating and validating timed based one time password authentication.
+# TotpAuthSharp
+.NET 10 library for generating and validating time-based one-time password (TOTP) authentication, compatible with Google Authenticator, Microsoft Authenticator and other RFC 6238 apps.
 
 # Based On Library
 https://github.com/damirkusar/AspNetCore.Totp AspNetCore.Totp
 
 # What's New
 
+## 3.0.0
+
+- **.NET 10.** The package now targets .NET 10 only. Stay on 2.1.x for .NET 8.
+- **`GenerateFromWeb` removed.** It sent the shared secret to quickchart.io. Use `Generate`, which renders the QR code locally.
+- **Replay protection.** `TryValidate` returns the time step of the matched code so you can reject a code that has already been used (RFC 6238 section 5.2). See [sample 5](#5-validate-a-code-at-sign-in-with-replay-protection).
+- **Codes as text.** `GenerateCode` returns the code as the six-digit string the user sees, including leading zeros ("012345"). `Validate` also accepts the code as a string, ignoring spaces.
+- **Secret generation.** `TotpSecret.Generate()` creates a cryptographically random 160-bit secret.
+- **Testable clock.** `TotpGenerator` accepts a .NET `TimeProvider`, so tests can pin the time.
+- **Tolerance fixed.** `timeToleranceInSeconds` now accepts every 30-second window that falls within it. See [Upgrading from 2.x](#upgrading-from-2x).
+- **Dependency injection fixed.** Registering your own `IQrCodeGenerator` is now enough; the factory registration 2.1.0 needed is no longer required.
+- **Faster, leaner.** Generating a code is about 2x faster, and validating one allocates 64 bytes instead of about 2.9 KB. Non-square QR codes render about a third faster, and the `QrCodeImage` data URI is built once instead of on every read.
+- **Better packaging.** IntelliSense documentation, SourceLink and a symbols package (`.snupkg`) for debugging into the library, and nullable annotations.
+- **Dependencies:** SkiaSharp 4.152.1 and `SkiaSharp.NativeAssets.Linux.NoDependencies` 4.152.1. SkiaSharp.QrCode 1.2.0, ZXing.Net 0.16.11 and ZXing.Net.Bindings.SkiaSharp 0.16.24 are unchanged (latest stable).
+
+### Upgrading from 2.x
+
+Code written for 2.1.0 keeps compiling and behaving the same, with these exceptions:
+
+| Change | What to do |
+|---|---|
+| Requires .NET 10. | Target `net10.0`, or stay on TotpAuthSharp 2.1.x. |
+| `GenerateFromWeb` is removed. | Call `Generate` instead. It takes the same arguments apart from `useHttps`. |
+| `timeToleranceInSeconds` now accepts every 30-second window it reaches. 2.x ignored tolerances of 30 or less and rounded larger ones to the nearest window, so some values now accept one more window either side: for example 30 (2.x: none, now one), 40 (one, now two) and 75 (two, now three). | Nothing, unless you relied on the old rounding. The default of 60, and 0, 90, 120 and other multiples of 30 from 60 upward, behave exactly as before. A negative tolerance is still treated as zero. |
+| Null arguments throw `ArgumentNullException` (with the parameter name) instead of `NullReferenceException`. | Only affects code that catches `NullReferenceException`. |
+| `TotpSetupGenerator(IQrCodeGenerator, IQrCodeDownloader)`, `IQrCodeDownloader` and `HttpQrCodeDownloader` are obsolete (CS0618) and will be removed in 4.0. The downloader is ignored. | Use `new TotpSetupGenerator(qrCodeGenerator)`. Projects that treat warnings as errors must make this change. |
+
+The codes, manual setup keys and QR code contents are identical to 2.1.0, so users who have already enrolled are unaffected. This was checked by running the same program against 2.1.0 and 3.0 and comparing 443 observations.
+
 ## 2.1.0
 
 - **Choice of local QR generators.** New `ZXingQrCodeGenerator` (ZXing.Net) alongside the default `SkiaQrCodeGenerator` (SkiaSharp.QrCode). Both render on your server, so the shared secret never leaves it.
-- **Verified QR accuracy.** Each generator's output is scanned by the *other* library in the test suite (SkiaSharp.QrCode codes are read by ZXing, and ZXing codes by SkiaSharp.QrCode). The tests confirm the secret, issuer and account come back exactly, and that the scanned secret produces codes `TotpValidator` accepts.
-- **Linux and Alpine support out of the box.** The package now includes SkiaSharp's Linux native library (`SkiaSharp.NativeAssets.Linux.NoDependencies`). No extra packages or system libraries are needed, including on `aspnet:8.0-alpine`.
-- **International issuer and account names fixed.** Non-ASCII text such as "Café" or "Zoë Müller" is now encoded correctly (UTF-8), so it displays properly in authenticator apps.
-- **Special characters in account names fixed.** Characters such as `:`, `?`, `#`, `/` and `@` in the account name are now encoded instead of corrupting the QR payload.
-- **Non-square QR sizes fixed.** A `qrCodeWidth` different from `qrCodeHeight` used to stretch the code so it could not be scanned reliably. The code is now drawn square and centred. Square sizes, including the 300x300 default, are unchanged.
-- **`GenerateFromWeb` is obsolete.** It sends the shared secret to quickchart.io. Use `Generate` instead. `GenerateFromWeb` still works but will be removed in 3.0.
-- **Dependencies:** SkiaSharp.QrCode upgraded from 1.0.0 to 1.2.0 (faster encoding; fixes a binary incompatibility with apps that use SkiaSharp.QrCode 1.1 or later). ZXing.Net 0.16.11 and ZXing.Net.Bindings.SkiaSharp 0.16.24 added.
-
-### Upgrading from 2.0.x
-
-- Calls to `GenerateFromWeb` now produce an obsolete warning (CS0618). Projects that treat warnings as errors must switch to `Generate`.
-- Account names are now percent-encoded in the QR payload, so `jane@example.com` is written as `jane%40example.com`. This follows the otpauth URL format, and authenticator apps decode it for display. Users who have already enrolled are unaffected, because the QR code is only used during setup.
+- **Verified QR accuracy.** Each generator's output is scanned by the *other* library in the test suite.
+- **Linux and Alpine support out of the box** via `SkiaSharp.NativeAssets.Linux.NoDependencies`.
+- **Fixes:** UTF-8 encoding of non-ASCII issuer and account names; special characters in account names; non-square QR sizes.
+- **`GenerateFromWeb` obsolete** (removed in 3.0).
+- **Dependencies:** SkiaSharp.QrCode 1.2.0; ZXing.Net 0.16.11 and ZXing.Net.Bindings.SkiaSharp 0.16.24 added.
 
 ## 2.0.0
 
@@ -55,9 +76,9 @@ Manual entry (.csproj)
 
 ## Platform support
 
-The package targets .NET 8 and runs on Windows, macOS and Linux. Linux support includes Alpine (musl) and Debian/Ubuntu (glibc) on x64 and ARM64.
+The package targets .NET 10 and runs on Windows, macOS and Linux. Linux support includes Alpine (musl) and Debian/Ubuntu (glibc) on x64 and ARM64.
 
-No extra NuGet packages or system libraries are needed. The Linux native library is included and does not require `libfontconfig`. Version 2.1.0 was tested on the `mcr.microsoft.com/dotnet/aspnet:8.0-alpine`, `sdk:8.0-alpine` and `sdk:8.0` images.
+No extra NuGet packages or system libraries are needed. The Linux native library is included and does not require `libfontconfig`. Version 3.0.0 was tested on the `mcr.microsoft.com/dotnet/aspnet:10.0-alpine`, `sdk:10.0-alpine` and `sdk:10.0` images.
 
 ## Public Namespace Structure
 
@@ -65,15 +86,12 @@ TotpAuthSharp
 - `CLASS` TotpGenerator
 - `CLASS` TotpValidator
 - `CLASS` TotpSetupGenerator
+- `CLASS` TotpSecret
 
-- TotpAuthSharp.Helper
-- `CLASS` Base32
-- `CLASS` Guard
+TotpAuthSharp.Helper
 - `CLASS` SkiaQrCodeGenerator (implements `IQrCodeGenerator`)
 - `CLASS` ZXingQrCodeGenerator (implements `IQrCodeGenerator`)
-- `CLASS` HttpQrCodeDownloader (implements `IQrCodeDownloader`)
-- `CLASS` TotpHasher
-- `CLASS` UrlEncoder
+- `CLASS` HttpQrCodeDownloader (obsolete)
 
 TotpAuthSharp.Models
 - `CLASS` TotpSetup
@@ -82,7 +100,7 @@ TotpAuthSharp.Models
 TotpAuthSharp.Interface
 - `INTERFACE` IQrCodeImage
 - `INTERFACE` IQrCodeGenerator
-- `INTERFACE` IQrCodeDownloader
+- `INTERFACE` IQrCodeDownloader (obsolete)
 - `INTERFACE` ITotpGenerator
 - `INTERFACE` ITotpSetup
 - `INTERFACE` ITotpSetupGenerator
@@ -90,92 +108,85 @@ TotpAuthSharp.Interface
 
 ## Using the package
 
-__Class: TotpGenerator__
+__TotpSecret__
 
-Constructor Parameters: `None`
+Description: Creates a cryptographically random secret for a new user, as a Base32 string. Store it securely against the user and pass it as `accountSecretKey` everywhere else.
 
-Description: Used for generating the TOTP code, using a super secret code for your app. 
+```C#
+var accountSecretKey = TotpSecret.Generate();      // 20 random bytes (160 bits)
+var longerSecret = TotpSecret.Generate(32);        // at least 16 bytes
+```
 
-Example
+__TotpGenerator__
+
+Constructor Parameters: `None` (uses the system clock), or `TimeProvider` (for example a fake clock in tests)
+
+Description: Generates the TOTP code for a user's secret (RFC 6238: HMAC-SHA1, 30-second time step, 6 digits).
+
 ```C#
 var generator = new TotpGenerator();
-var code = generator.Generate(_userIdentity.AccountSecretKey);
+int code = generator.Generate(accountSecretKey);             // 12345 for "012345"
+string display = generator.GenerateCode(accountSecretKey);   // "012345", as the app shows it
 ```
 
 __TotpValidator__
 
-Constructor Parameters: `TotpGenerator`
+Constructor Parameters: `ITotpGenerator`
 
-Description: Generates a new token and compares against a given TOTP code to check validity.
+Description: Checks a code entered by the user against the codes valid now.
 
-Example
 ```C#
-var generator = new TotpGenerator();
-var validator = new TotpValidator(generator);
-var code = validator.Validate(_userIdentity.AccountSecretKey, code);
+var validator = new TotpValidator(new TotpGenerator());
+bool valid = validator.Validate(accountSecretKey, 12345);
+bool validText = validator.Validate(accountSecretKey, "012 345");   // text: spaces ignored, six digits required
+bool fresh = validator.TryValidate(accountSecretKey, 12345, out long timeStep); // for replay protection
 ```
+
+`timeToleranceInSeconds` (default 60) allows for clock drift between the server and the phone. Every 30-second window that falls within the tolerance is accepted:
+
+| Tolerance | Windows accepted |
+|---|---|
+| 0 (or negative) | the current window only |
+| 1 to 30 | current and one either side |
+| 31 to 60 (default 60) | current and two either side |
+| 61 to 90 | current and three either side |
 
 __TotpSetupGenerator__
 
-Constructor Parameters: `None` (default), or `IQrCodeGenerator, IQrCodeDownloader` for custom composition / testing
+Constructor Parameters: `None` (uses `SkiaQrCodeGenerator`), or `IQrCodeGenerator`
 
-Description: Generates the setup details a user needs to add your app to an authenticator app (Google Authenticator, Microsoft Authenticator and so on). It returns a `TotpSetup` containing the QR code image (PNG bytes and a `data:` URI) and the manual setup key.
-
-The parameterless constructor wires the default `SkiaQrCodeGenerator` (local QR generation via SkiaSharp.QrCode) and `HttpQrCodeDownloader` (used only by the obsolete `GenerateFromWeb`). A second constructor accepts these dependencies so you can inject your own implementations or mocks:
+Description: Generates the setup details a user needs to add your app to an authenticator app. It returns a `TotpSetup` containing the QR code image (PNG bytes and a `data:` URI) and the manual setup key.
 
 ```C#
-// Default
-var qrGenerator = new TotpSetupGenerator();
+// Default: SkiaSharp.QrCode
+var setupGenerator = new TotpSetupGenerator();
 
-// Injected (IoC / testing)
-var qrGenerator = new TotpSetupGenerator(myQrCodeGenerator, myQrCodeDownloader);
-
-// Local generation with ZXing.Net instead of SkiaSharp.QrCode (using TotpAuthSharp.Helper;)
-var qrGenerator = new TotpSetupGenerator(new ZXingQrCodeGenerator(), new HttpQrCodeDownloader());
+// ZXing.Net, your own IQrCodeGenerator, or a mock (using TotpAuthSharp.Helper;)
+var setupGenerator = new TotpSetupGenerator(new ZXingQrCodeGenerator());
 ```
 
 __Choosing a QR generator__
 
 | Generator | Library | Notes |
 |---|---|---|
-| `SkiaQrCodeGenerator` | SkiaSharp.QrCode | Default. |
-| `ZXingQrCodeGenerator` | ZXing.Net | Error correction level M. |
+| `SkiaQrCodeGenerator` | SkiaSharp.QrCode | Default. About 2.3 ms per 300x300 code on a desktop CPU. |
+| `ZXingQrCodeGenerator` | ZXing.Net | About 3.3 ms per 300x300 code on a desktop CPU. |
 
-Both render the QR code locally, so the shared secret never leaves your server. Both produce a PNG of the requested size and work on every supported platform. The test suite checks each one against the other library's decoder. You can also supply your own implementation of `IQrCodeGenerator`.
+Both use error correction level M, render the QR code locally so the shared secret never leaves your server, produce a PNG of the requested size, and work on every supported platform. The test suite checks each one against the other library's decoder.
 
-__Generate__ (recommended)
+__Generate__
 
-Renders the QR code locally with the configured `IQrCodeGenerator`.
+```C#
+var setup = setupGenerator.Generate(
+	issuer: "TestCo",
+	accountIdentity: "jane.doe@example.co.za",
+	accountSecretKey: accountSecretKey
+);
+```
 
 - `issuer` is written to the otpauth `issuer` parameter, percent-encoded as UTF-8, so spaces and non-ASCII text are kept (for example "TACS UAT").
 - `accountIdentity` has its spaces removed, then is percent-encoded.
 - `qrCodeWidth` and `qrCodeHeight` default to 300px. If they differ, the code is drawn square at the smaller size and centred.
-
-Example
-```C#
-var qrGenerator = new TotpSetupGenerator();
-var qrCode = qrGenerator.Generate(
-	issuer: "TestCo",
-	accountIdentity: _userIdentity.Id.ToString(),
-	accountSecretKey: _userIdentity.AccountSecretKey
-);
-```
-
-__GenerateFromWeb__ (obsolete)
-
-Description: Fetches the QR code image from quickchart.io and returns it as a TotpSetup class containing the image.
-
-> **Obsolete since 2.1.0:** `GenerateFromWeb` sends the whole otpauth URL, including the shared secret, to quickchart.io. Use `Generate`, which renders locally. `GenerateFromWeb` will be removed in 3.0.
-
-Example
-```C#
-var qrGenerator = new TotpSetupGenerator();
-var qrCode = qrGenerator.GenerateFromWeb(
-	issuer: "TestCo",
-	accountIdentity: _userIdentity.Id.ToString(),
-	accountSecretKey: _userIdentity.AccountSecretKey
-);
-```
 
 ## Usage Samples
 
@@ -191,26 +202,20 @@ using TotpAuthSharp.Interface;
 builder.Services.AddSingleton<ITotpGenerator, TotpGenerator>();
 builder.Services.AddSingleton<ITotpValidator, TotpValidator>();
 
-// Pick the local QR generator: SkiaQrCodeGenerator (default) or ZXingQrCodeGenerator.
+// Optional: pick the QR generator. Without this line, SkiaQrCodeGenerator is used.
 builder.Services.AddSingleton<IQrCodeGenerator, ZXingQrCodeGenerator>();
 
-// Register TotpSetupGenerator with a factory so it uses the generator above.
-builder.Services.AddSingleton<ITotpSetupGenerator>(sp =>
-    new TotpSetupGenerator(sp.GetRequiredService<IQrCodeGenerator>(), new HttpQrCodeDownloader()));
+builder.Services.AddSingleton<ITotpSetupGenerator, TotpSetupGenerator>();
 ```
-
-> **Why the factory?** `TotpSetupGenerator` has a parameterless constructor. If you register it with `AddSingleton<ITotpSetupGenerator, TotpSetupGenerator>()` without also registering `IQrCodeDownloader`, the container picks the parameterless constructor and silently uses `SkiaQrCodeGenerator`, ignoring your `IQrCodeGenerator` registration.
 
 ### 2. Enrol a user
 
 Create a random secret per user and store it with the user record. Treat it like a password: encrypt it at rest and never log it. Then return the QR code and the manual setup key.
 
 ```C#
-using System.Security.Cryptography;
-
 app.MapPost("/2fa/setup", (ITotpSetupGenerator setupGenerator) =>
 {
-    var accountSecretKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(20));
+    var accountSecretKey = TotpSecret.Generate();
     // Save accountSecretKey against the user here (encrypted), marked as "not yet confirmed".
 
     var setup = setupGenerator.Generate(
@@ -228,10 +233,10 @@ app.MapPost("/2fa/setup", (ITotpSetupGenerator setupGenerator) =>
 
 ### 3. Confirm enrolment with the first code
 
-Only switch two-factor authentication on once the user proves their app works. This catches a mistyped manual key or a failed scan.
+Only switch two-factor authentication on once the user proves their app works. This catches a mistyped manual key or a failed scan. Taking the code as text keeps any leading zeros the user typed.
 
 ```C#
-app.MapPost("/2fa/confirm", (ITotpValidator validator, ConfirmRequest request) =>
+app.MapPost("/2fa/confirm", (ITotpValidator validator, CodeRequest request) =>
 {
     var accountSecretKey = "..."; // load the unconfirmed secret for the current user
 
@@ -242,7 +247,7 @@ app.MapPost("/2fa/confirm", (ITotpValidator validator, ConfirmRequest request) =
     return Results.Ok();
 });
 
-public record ConfirmRequest(int Code);
+public record CodeRequest(string Code);
 ```
 
 ### 4. Show the QR code
@@ -264,17 +269,23 @@ app.MapGet("/2fa/qr.png", (ITotpSetupGenerator setupGenerator) =>
 });
 ```
 
-### 5. Validate a code at sign-in
+### 5. Validate a code at sign-in, with replay protection
+
+A code stays valid for its whole time window, so someone who sees it could reuse it. Store the time step of the last code each user signed in with, and reject any code that is not newer.
 
 ```C#
-app.MapPost("/2fa/verify", (ITotpValidator validator, ConfirmRequest request) =>
+app.MapPost("/2fa/verify", (ITotpValidator validator, CodeRequest request) =>
 {
-    var accountSecretKey = "..."; // load the confirmed secret for the current user
+    var accountSecretKey = "...";   // load the confirmed secret for the current user
+    long lastUsedTimeStep = -1;     // load the user's last used time step (-1 if none)
 
-    // The third argument is the allowed clock drift in seconds (default 60).
-    return validator.Validate(accountSecretKey, request.Code, timeToleranceInSeconds: 30)
-        ? Results.Ok()
-        : Results.Unauthorized();
+    if (!int.TryParse(request.Code.Replace(" ", ""), out var code)
+        || !validator.TryValidate(accountSecretKey, code, out var timeStep)
+        || timeStep <= lastUsedTimeStep)
+        return Results.Unauthorized();
+
+    // Save timeStep as the user's last used time step here.
+    return Results.Ok();
 });
 ```
 
@@ -284,8 +295,8 @@ app.MapPost("/2fa/verify", (ITotpValidator validator, ConfirmRequest request) =>
 using TotpAuthSharp;
 using TotpAuthSharp.Helper;
 
-var setupGenerator = new TotpSetupGenerator(new ZXingQrCodeGenerator(), new HttpQrCodeDownloader());
-var setup = setupGenerator.Generate("TACS UAT", "Jane Doe", "the user's secret", qrCodeWidth: 400, qrCodeHeight: 400);
+var setupGenerator = new TotpSetupGenerator(new ZXingQrCodeGenerator());
+var setup = setupGenerator.Generate("TACS UAT", "Jane Doe", TotpSecret.Generate(), qrCodeWidth: 400, qrCodeHeight: 400);
 
 File.WriteAllBytes("totp-qr.png", setup.QrCodeImageBytes);
 Console.WriteLine($"Manual setup key: {setup.ManualSetupKey}");
@@ -293,7 +304,7 @@ Console.WriteLine($"Manual setup key: {setup.ManualSetupKey}");
 
 ### 7. Unit testing your code
 
-Every service has an interface, so you can mock it (example uses Moq):
+Every service has an interface, so you can mock it (example uses Moq). To test time-based logic against the real generator, pass a `TimeProvider` such as `FakeTimeProvider` from Microsoft.Extensions.TimeProvider.Testing.
 
 ```C#
 var validator = new Mock<ITotpValidator>();
@@ -302,7 +313,10 @@ validator.Setup(v => v.Validate(It.IsAny<string>(), 123456, It.IsAny<int>())).Re
 var qrCodeGenerator = new Mock<IQrCodeGenerator>();
 qrCodeGenerator.Setup(g => g.Generate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
     .Returns(new byte[] { 1, 2, 3 });
-var setupGenerator = new TotpSetupGenerator(qrCodeGenerator.Object, Mock.Of<IQrCodeDownloader>());
+var setupGenerator = new TotpSetupGenerator(qrCodeGenerator.Object);
+
+var clock = new FakeTimeProvider(DateTimeOffset.FromUnixTimeSeconds(1234567890));
+var generator = new TotpGenerator(clock);   // generator.GenerateCode("12345678901234567890") == "005924"
 ```
 
 ### Example Implementation
@@ -310,6 +324,7 @@ var setupGenerator = new TotpSetupGenerator(qrCodeGenerator.Object, Mock.Of<IQrC
 ```C#
 using System;
 using TotpAuthSharp;
+using TotpAuthSharp.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthApi.Controllers
@@ -327,7 +342,7 @@ namespace AuthApi.Controllers
             return new UserIdentity()
             {
                 Id = new Random().Next(0, 999),
-                AccountSecretKey = Guid.NewGuid().ToString()
+                AccountSecretKey = TotpSecret.Generate()
             };
         }
     }
@@ -350,9 +365,9 @@ namespace AuthApi.Controllers
         }
 
         [HttpGet("code")]
-        public int GetCode()
+        public string GetCode()
         {
-            return _totpGenerator.Generate(_userIdentity.AccountSecretKey);
+            return _totpGenerator.GenerateCode(_userIdentity.AccountSecretKey);
         }
 
         [HttpGet("qr-code")]
@@ -367,7 +382,7 @@ namespace AuthApi.Controllers
         }
 
         [HttpPost("validate")]
-        public bool Validate([FromBody] int code)
+        public bool Validate([FromBody] string code)
         {
             return _totpValidator.Validate(_userIdentity.AccountSecretKey, code);
         }
