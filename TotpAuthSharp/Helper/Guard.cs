@@ -1,14 +1,12 @@
-﻿using System;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace TotpAuthSharp.Helper;
 
 internal static class Guard
 {
-    internal static void NotNull(object testee)
+    internal static void NotNull(object? testee, [CallerArgumentExpression(nameof(testee))] string? paramName = null)
     {
-        if (testee == null)
-        {
-            throw new NullReferenceException();
-        }
+        ArgumentNullException.ThrowIfNull(testee, paramName);
     }
 }

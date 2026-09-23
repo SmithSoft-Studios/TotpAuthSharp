@@ -6,6 +6,7 @@
 		<Version>3.0.0</Version>
 		<Authors>SmithSoftStudios</Authors>
 		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
 		<AssemblyName>TotpAuthSharp</AssemblyName>
 		<PackageId>TotpAuthSharp</PackageId>
 		<PackageTags>.net10.0;one time password;totp;google authenticator;authenticator;asp.net core;totp;otp;multi-factor;two-factor;2fa;2factor;mfa;security;oath;protection;authentication</PackageTags>
