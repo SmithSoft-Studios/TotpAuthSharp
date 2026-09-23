@@ -2,6 +2,11 @@
 
 namespace TotpAuthSharp.Models;
 
+/// <summary>
+///     What a user needs to add your app to an authenticator app: the QR code and the manual setup key.
+/// </summary>
+/// <param name="manualSetupKey">The Base32 secret the user can type in if they cannot scan the QR code.</param>
+/// <param name="imageBytes">The PNG QR code image.</param>
 public class TotpSetup(string manualSetupKey, byte[] imageBytes) : ITotpSetup
 {
     private readonly IQrCodeImage _qrCodeImage = new QrCodeImage(imageBytes);
